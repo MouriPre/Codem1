@@ -1,0 +1,465 @@
+local v1 = {}
+local v_u_2 = "rbxasset://textures/ui/traildot.png"
+local v_u_3 = "rbxasset://textures/ui/waypoint.png"
+local v_u_4 = false
+local v_u_5 = UDim2.new(0, 42, 0, 50)
+local v_u_6 = Vector2.new(0, 0.5)
+local v_u_7 = Vector2.new(0, 1)
+local v_u_8 = Vector2.new(0, 0.5)
+local v_u_9 = Vector2.new(0.1, 0.5)
+local v_u_10 = Vector2.new(-0.1, 0.5)
+local v_u_11 = Vector2.new(1.5, 1.5)
+local v_u_12 = RaycastParams.new()
+v_u_12.FilterType = Enum.RaycastFilterType.Exclude
+local v_u_13 = Vector3.yAxis * 2.5
+local v_u_14 = Vector3.yAxis * -10
+local v15 = game:GetService("Players")
+local v_u_16 = game:GetService("TweenService")
+local v_u_17 = game:GetService("RunService")
+local v_u_18 = game:GetService("Workspace")
+local v19 = script.Parent.Parent:WaitForChild("CommonUtils")
+local v_u_20 = require(v19:WaitForChild("FlagUtil")).getUserFlag("UserRaycastPerformanceImprovements")
+local v_u_21 = v15.LocalPlayer
+local function v_u_33()
+    -- upvalues: (ref) v_u_11, (ref) v_u_4, (ref) v_u_2, (copy) v_u_5, (copy) v_u_6, (ref) v_u_3, (copy) v_u_8
+    local v22 = Instance.new("Part")
+    v22.Size = Vector3.new(1, 1, 1)
+    v22.Anchored = true
+    v22.CanCollide = false
+    v22.Name = "TrailDot"
+    v22.Transparency = 1
+    local v23 = Instance.new("ImageHandleAdornment")
+    v23.Name = "TrailDotImage"
+    v23.Size = v_u_11
+    v23.SizeRelativeOffset = Vector3.new(0, 0, -0.1)
+    v23.AlwaysOnTop = v_u_4
+    v23.Image = v_u_2
+    v23.Adornee = v22
+    v23.Parent = v22
+    local v24 = Instance.new("Part")
+    v24.Size = Vector3.new(2, 2, 2)
+    v24.Anchored = true
+    v24.CanCollide = false
+    v24.Name = "EndWaypoint"
+    v24.Transparency = 1
+    local v25 = Instance.new("ImageHandleAdornment")
+    v25.Name = "TrailDotImage"
+    v25.Size = v_u_11
+    v25.SizeRelativeOffset = Vector3.new(0, 0, -0.1)
+    v25.AlwaysOnTop = v_u_4
+    v25.Image = v_u_2
+    v25.Adornee = v24
+    v25.Parent = v24
+    local v26 = Instance.new("BillboardGui")
+    v26.Name = "EndWaypointBillboard"
+    v26.Size = v_u_5
+    v26.LightInfluence = 0
+    v26.SizeOffset = v_u_6
+    v26.AlwaysOnTop = true
+    v26.Adornee = v24
+    v26.Parent = v24
+    local v27 = Instance.new("ImageLabel")
+    v27.Image = v_u_3
+    v27.BackgroundTransparency = 1
+    v27.Size = UDim2.new(1, 0, 1, 0)
+    v27.Parent = v26
+    local v28 = Instance.new("Part")
+    v28.Size = Vector3.new(2, 2, 2)
+    v28.Anchored = true
+    v28.CanCollide = false
+    v28.Name = "FailureWaypoint"
+    v28.Transparency = 1
+    local v29 = Instance.new("ImageHandleAdornment")
+    v29.Name = "TrailDotImage"
+    v29.Size = v_u_11
+    v29.SizeRelativeOffset = Vector3.new(0, 0, -0.1)
+    v29.AlwaysOnTop = v_u_4
+    v29.Image = v_u_2
+    v29.Adornee = v28
+    v29.Parent = v28
+    local v30 = Instance.new("BillboardGui")
+    v30.Name = "FailureWaypointBillboard"
+    v30.Size = v_u_5
+    v30.LightInfluence = 0
+    v30.SizeOffset = v_u_8
+    v30.AlwaysOnTop = true
+    v30.Adornee = v28
+    v30.Parent = v28
+    local v31 = Instance.new("Frame")
+    v31.BackgroundTransparency = 1
+    v31.Size = UDim2.new(0, 0, 0, 0)
+    v31.Position = UDim2.new(0.5, 0, 1, 0)
+    v31.Parent = v30
+    local v32 = Instance.new("ImageLabel")
+    v32.Image = v_u_3
+    v32.BackgroundTransparency = 1
+    v32.Position = UDim2.new(0, -v_u_5.X.Offset / 2, 0, -v_u_5.Y.Offset)
+    v32.Size = v_u_5
+    v32.Parent = v31
+    return v22, v24, v28
+end
+local v_u_34, v_u_35, v_u_36 = v_u_33()
+local function v_u_47(p37, p38)
+    -- upvalues: (copy) v_u_20, (copy) v_u_12, (copy) v_u_18, (copy) v_u_21, (copy) v_u_13, (copy) v_u_14
+    if v_u_20 then
+        v_u_12.FilterDescendantsInstances = { v_u_18.CurrentCamera, v_u_21.Character }
+        local v39 = v_u_18:Raycast(p38 + v_u_13, v_u_14, v_u_12)
+        if v39 then
+            p37.CFrame = CFrame.lookAlong(v39.Position, v39.Normal)
+            local v40 = v_u_18.CurrentCamera
+            local v41 = v40:FindFirstChild("ClickToMoveDisplay")
+            if not v41 then
+                v41 = Instance.new("Model")
+                v41.Name = "ClickToMoveDisplay"
+                v41.Parent = v40
+            end
+            p37.Parent = v41
+            return
+        end
+    else
+        local v42, v43, v44 = v_u_18:FindPartOnRayWithIgnoreList(Ray.new(p38 + Vector3.new(0, 2.5, 0), Vector3.new(0, -10, 0)), { v_u_18.CurrentCamera, v_u_21.Character })
+        if v42 then
+            p37.CFrame = CFrame.new(v43, v43 + v44)
+            local v45 = v_u_18.CurrentCamera
+            local v46 = v45:FindFirstChild("ClickToMoveDisplay")
+            if not v46 then
+                v46 = Instance.new("Model")
+                v46.Name = "ClickToMoveDisplay"
+                v46.Parent = v45
+            end
+            p37.Parent = v46
+        end
+    end
+end
+local v_u_48 = {}
+v_u_48.__index = v_u_48
+function v_u_48.Destroy(p49)
+    p49.DisplayModel:Destroy()
+end
+function v_u_48.NewDisplayModel(_, p50)
+    -- upvalues: (ref) v_u_34, (copy) v_u_47
+    local v51 = v_u_34:Clone()
+    v_u_47(v51, p50)
+    return v51
+end
+function v_u_48.new(p52, p53)
+    -- upvalues: (copy) v_u_48
+    local v54 = v_u_48
+    local v55 = setmetatable({}, v54)
+    v55.DisplayModel = v55:NewDisplayModel(p52)
+    v55.ClosestWayPoint = p53
+    return v55
+end
+local v_u_56 = {}
+v_u_56.__index = v_u_56
+function v_u_56.Destroy(p57)
+    p57.Destroyed = true
+    p57.Tween:Cancel()
+    p57.DisplayModel:Destroy()
+end
+function v_u_56.NewDisplayModel(_, p58)
+    -- upvalues: (ref) v_u_35, (copy) v_u_47
+    local v59 = v_u_35:Clone()
+    v_u_47(v59, p58)
+    return v59
+end
+function v_u_56.CreateTween(p60)
+    -- upvalues: (copy) v_u_16, (copy) v_u_7
+    local v61 = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, -1, true)
+    local v62 = {
+        ["SizeOffset"] = v_u_7
+    }
+    local v63 = v_u_16:Create(p60.DisplayModel.EndWaypointBillboard, v61, v62)
+    v63:Play()
+    return v63
+end
+function v_u_56.TweenInFrom(p64, p65)
+    -- upvalues: (copy) v_u_16
+    local v66 = p65 - p64.DisplayModel.Position
+    local v67 = p64.DisplayModel.EndWaypointBillboard
+    local v68 = v66.Y
+    v67.StudsOffset = Vector3.new(0, v68, 0)
+    local v69 = TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local v70 = v_u_16:Create(p64.DisplayModel.EndWaypointBillboard, v69, {
+        ["StudsOffset"] = Vector3.new(0, 0, 0)
+    })
+    v70:Play()
+    return v70
+end
+function v_u_56.new(p71, p72, p73)
+    -- upvalues: (copy) v_u_56
+    local v74 = v_u_56
+    local v_u_75 = setmetatable({}, v74)
+    v_u_75.DisplayModel = v_u_75:NewDisplayModel(p71)
+    v_u_75.Destroyed = false
+    if p73 and (p73 - p71).Magnitude > 5 then
+        v_u_75.Tween = v_u_75:TweenInFrom(p73)
+        coroutine.wrap(function()
+            -- upvalues: (copy) v_u_75
+            v_u_75.Tween.Completed:Wait()
+            if not v_u_75.Destroyed then
+                v_u_75.Tween = v_u_75:CreateTween()
+            end
+        end)()
+    else
+        v_u_75.Tween = v_u_75:CreateTween()
+    end
+    v_u_75.ClosestWayPoint = p72
+    return v_u_75
+end
+local v_u_76 = {}
+v_u_76.__index = v_u_76
+function v_u_76.Hide(p77)
+    p77.DisplayModel.Parent = nil
+end
+function v_u_76.Destroy(p78)
+    p78.DisplayModel:Destroy()
+end
+function v_u_76.NewDisplayModel(_, p79)
+    -- upvalues: (ref) v_u_36, (copy) v_u_47, (copy) v_u_20, (copy) v_u_12, (copy) v_u_18, (copy) v_u_21, (copy) v_u_13, (copy) v_u_14
+    local v80 = v_u_36:Clone()
+    v_u_47(v80, p79)
+    if v_u_20 then
+        v_u_12.FilterDescendantsInstances = { v_u_18.CurrentCamera, v_u_21.Character }
+        local v81 = v_u_18:Raycast(p79 + v_u_13, v_u_14, v_u_12)
+        if v81 then
+            v80.CFrame = CFrame.lookAlong(v81.Position, v81.Normal)
+            local v82 = v_u_18.CurrentCamera
+            local v83 = v82:FindFirstChild("ClickToMoveDisplay")
+            if not v83 then
+                v83 = Instance.new("Model")
+                v83.Name = "ClickToMoveDisplay"
+                v83.Parent = v82
+            end
+            v80.Parent = v83
+            return v80
+        end
+    else
+        local v84, v85, v86 = v_u_18:FindPartOnRayWithIgnoreList(Ray.new(p79 + Vector3.new(0, 2.5, 0), Vector3.new(0, -10, 0)), { v_u_18.CurrentCamera, v_u_21.Character })
+        if v84 then
+            v80.CFrame = CFrame.new(v85, v85 + v86)
+            local v87 = v_u_18.CurrentCamera
+            local v88 = v87:FindFirstChild("ClickToMoveDisplay")
+            if not v88 then
+                v88 = Instance.new("Model")
+                v88.Name = "ClickToMoveDisplay"
+                v88.Parent = v87
+            end
+            v80.Parent = v88
+        end
+    end
+    return v80
+end
+function v_u_76.RunFailureTween(p89)
+    -- upvalues: (copy) v_u_16, (copy) v_u_9, (copy) v_u_10, (copy) v_u_8
+    wait(0.125)
+    local v90 = TweenInfo.new(0.0625, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local v91 = {
+        ["SizeOffset"] = v_u_9
+    }
+    local v92 = v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard, v90, v91)
+    v92:Play()
+    v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard.Frame, v90, {
+        ["Rotation"] = 10
+    }):Play()
+    v92.Completed:wait()
+    local v93 = TweenInfo.new(0.125, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 3, true)
+    local v94 = {
+        ["SizeOffset"] = v_u_10
+    }
+    local v95 = v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard, v93, v94)
+    v95:Play()
+    local v96 = TweenInfo.new(0.125, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, 3, true)
+    v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard.Frame.ImageLabel, v96, {
+        ["ImageColor3"] = Color3.new(0.75, 0.75, 0.75)
+    }):Play()
+    v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard.Frame, v96, {
+        ["Rotation"] = -10
+    }):Play()
+    v95.Completed:wait()
+    local v97 = TweenInfo.new(0.0625, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+    local v98 = {
+        ["SizeOffset"] = v_u_8
+    }
+    local v99 = v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard, v97, v98)
+    v99:Play()
+    v_u_16:Create(p89.DisplayModel.FailureWaypointBillboard.Frame, v97, {
+        ["Rotation"] = 0
+    }):Play()
+    v99.Completed:wait()
+    wait(0.125)
+end
+function v_u_76.new(p100)
+    -- upvalues: (copy) v_u_76
+    local v101 = v_u_76
+    local v102 = setmetatable({}, v101)
+    v102.DisplayModel = v102:NewDisplayModel(p100)
+    return v102
+end
+local v_u_103 = Instance.new("Animation")
+v_u_103.AnimationId = "rbxassetid://2874840706"
+local v_u_104 = nil
+local function v_u_116(p105, p106)
+    -- upvalues: (copy) v_u_48, (copy) v_u_56
+    local v107 = {}
+    local v108 = 1
+    for v109 = 1, #p105 - 1 do
+        local v110 = (p105[v109].Position - p105[#p105].Position).Magnitude < 3
+        local v111
+        if v109 % 2 == 0 then
+            v111 = not v110
+        else
+            v111 = false
+        end
+        if v111 then
+            v107[v108] = v_u_48.new(p105[v109].Position, v109)
+            v108 = v108 + 1
+        end
+    end
+    local v112 = v_u_56.new(p105[#p105].Position, #p105, p106)
+    table.insert(v107, v112)
+    local v113 = {}
+    local v114 = 1
+    for v115 = #v107, 1, -1 do
+        v113[v114] = v107[v115]
+        v114 = v114 + 1
+    end
+    return v113
+end
+local v_u_117 = 0
+function v1.CreatePathDisplay(p_u_118, p119)
+    -- upvalues: (ref) v_u_117, (copy) v_u_116, (copy) v_u_17, (copy) v_u_18, (ref) v_u_11
+    v_u_117 = v_u_117 + 1
+    local v_u_120 = v_u_116(p_u_118, p119)
+    local function v_u_124(p121)
+        -- upvalues: (copy) v_u_120
+        for v122 = #v_u_120, 1, -1 do
+            local v123 = v_u_120[v122]
+            if v123.ClosestWayPoint > p121 then
+                break
+            end
+            v123:Destroy()
+            v_u_120[v122] = nil
+        end
+    end
+    local v_u_125 = "ClickToMoveResizeTrail" .. v_u_117
+    local function v131()
+        -- upvalues: (copy) v_u_120, (ref) v_u_17, (copy) v_u_125, (ref) v_u_18, (ref) v_u_11
+        if #v_u_120 == 0 then
+            v_u_17:UnbindFromRenderStep(v_u_125)
+        else
+            local v126 = v_u_18.CurrentCamera.CFrame.p
+            for v127 = 1, #v_u_120 do
+                local v128 = v_u_120[v127].DisplayModel:FindFirstChild("TrailDotImage")
+                if v128 then
+                    local v129 = v_u_11
+                    local v130 = (v_u_120[v127].DisplayModel.Position - v126).Magnitude - 10
+                    v128.Size = v129 * (1 + 1.5 * (math.clamp(v130, 0, 90) / 90))
+                end
+            end
+        end
+    end
+    v_u_17:BindToRenderStep(v_u_125, Enum.RenderPriority.Camera.Value - 1, v131)
+    return function()
+        -- upvalues: (copy) v_u_124, (copy) p_u_118
+        v_u_124(#p_u_118)
+    end, v_u_124
+end
+local v_u_132 = nil
+function v1.DisplayFailureWaypoint(p133)
+    -- upvalues: (ref) v_u_132, (copy) v_u_76
+    if v_u_132 then
+        v_u_132:Hide()
+    end
+    local v_u_134 = v_u_76.new(p133)
+    v_u_132 = v_u_134
+    coroutine.wrap(function()
+        -- upvalues: (ref) v_u_134
+        v_u_134:RunFailureTween()
+        v_u_134:Destroy()
+        v_u_134 = nil
+    end)()
+end
+function v1.CreateEndWaypoint(p135)
+    -- upvalues: (copy) v_u_56
+    return v_u_56.new(p135)
+end
+function v1.PlayFailureAnimation()
+    -- upvalues: (copy) v_u_21, (ref) v_u_104, (copy) v_u_103
+    local v136 = v_u_21.Character
+    local v137
+    if v136 then
+        v137 = v136:FindFirstChildOfClass("Humanoid")
+    else
+        v137 = nil
+    end
+    if v137 then
+        local v138
+        if v137 == nil then
+            v138 = v_u_104
+        else
+            v_u_104 = v137:LoadAnimation(v_u_103)
+            local v139 = v_u_104
+            assert(v139, "")
+            v_u_104.Priority = Enum.AnimationPriority.Action
+            v_u_104.Looped = false
+            v138 = v_u_104
+        end
+        v138:Play()
+    end
+end
+function v1.CancelFailureAnimation()
+    -- upvalues: (ref) v_u_104
+    if v_u_104 ~= nil and v_u_104.IsPlaying then
+        v_u_104:Stop()
+    end
+end
+function v1.SetWaypointTexture(p140)
+    -- upvalues: (ref) v_u_2, (ref) v_u_34, (ref) v_u_35, (ref) v_u_36, (copy) v_u_33
+    v_u_2 = p140
+    local v141, v142, v143 = v_u_33()
+    v_u_34 = v141
+    v_u_35 = v142
+    v_u_36 = v143
+end
+function v1.GetWaypointTexture()
+    -- upvalues: (ref) v_u_2
+    return v_u_2
+end
+function v1.SetWaypointRadius(p144)
+    -- upvalues: (ref) v_u_11, (ref) v_u_34, (ref) v_u_35, (ref) v_u_36, (copy) v_u_33
+    v_u_11 = Vector2.new(p144, p144)
+    local v145, v146, v147 = v_u_33()
+    v_u_34 = v145
+    v_u_35 = v146
+    v_u_36 = v147
+end
+function v1.GetWaypointRadius()
+    -- upvalues: (ref) v_u_11
+    return v_u_11.X
+end
+function v1.SetEndWaypointTexture(p148)
+    -- upvalues: (ref) v_u_3, (ref) v_u_34, (ref) v_u_35, (ref) v_u_36, (copy) v_u_33
+    v_u_3 = p148
+    local v149, v150, v151 = v_u_33()
+    v_u_34 = v149
+    v_u_35 = v150
+    v_u_36 = v151
+end
+function v1.GetEndWaypointTexture()
+    -- upvalues: (ref) v_u_3
+    return v_u_3
+end
+function v1.SetWaypointsAlwaysOnTop(p152)
+    -- upvalues: (ref) v_u_4, (ref) v_u_34, (ref) v_u_35, (ref) v_u_36, (copy) v_u_33
+    v_u_4 = p152
+    local v153, v154, v155 = v_u_33()
+    v_u_34 = v153
+    v_u_35 = v154
+    v_u_36 = v155
+end
+function v1.GetWaypointsAlwaysOnTop()
+    -- upvalues: (ref) v_u_4
+    return v_u_4
+end
+return v1
